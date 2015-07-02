@@ -8,7 +8,8 @@
 ## Import Modules
 
 
-from datetime import datetimeimport time
+from datetime import datetime
+import time
 import os
 from os.path import expanduser
 import socket
@@ -45,7 +46,8 @@ def exists(path):
         return False
 
 def ifttt(action, v1='', v2='', v3=''):
-    requests.post('https://maker.ifttt.com/trigger/{0}/with/key/bgj70H05l-3HBccRCYvERV'.format(action), data={'value1': v1, 'value2': v2, 'value3': v3})
+    requests.post('https://maker.ifttt.com/trigger/{0}/with/key/bgj70H05l-3HBc'
+    'cRCYvERV'.format(action), data={'value1': v1, 'value2': v2, 'value3': v3})
 
 def notify(message):
     """Gives a Pushbullet message."""
@@ -75,15 +77,24 @@ def error(msg):
 def excel_close(file):
     try:
         file.close()
+        return True
     except PermissionError:
-        __ = input('Permissions denied! Please close all Excel windows and try again.')
-        excel_close(file)
+        return False
+        __ = input('Permissions denied! Please close all Excel windows and try'
+        ' again.')
+        if excel_close(file):
+            pass
 
 def rearrange(lst, order):
-    """Returns lst but in the order of, well, order."""
+    """Returns lst but in the order of order.
+    
+    Indexing starts at 0."""
     return [lst[x] for x in order]
 
 def empty_list(lst):
+    """Returns whether a list contains no data.
+    
+    Recursively calls itself if it finds a list."""
     empty = True
     for x in lst:
         if type(x) == list:
