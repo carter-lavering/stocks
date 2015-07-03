@@ -49,9 +49,20 @@ def ifttt(action, v1='', v2='', v3=''):
     requests.post('https://maker.ifttt.com/trigger/{0}/with/key/bgj70H05l-3HBc'
     'cRCYvERV'.format(action), data={'value1': v1, 'value2': v2, 'value3': v3})
 
+def week(timestamp):
+    """Returns the ISO calendar week number of a given timestamp.
+    
+    Timestamp can be either an integer or a string."""
+    print(type(timestamp))
+    return datetime.fromtimestamp(int(timestamp)).isocalendar()[1]
+
 def notify(message):
     """Gives a Pushbullet message."""
     ifttt('notify', v1=message)
+
+def diff(x, y):
+    """Returns the difference between two numbers."""
+    return abs(x - y)
 
 def closest_num(n, lst):
     """Returns the closest number to n in lst.
@@ -137,7 +148,7 @@ else:
         print('stock_signs.txt has been created. Please restart the program.')
         end_script()
 
-if signs == []:
+if not signs:
     with open(desktop + 'stock_signs.txt', 'w') as f_writesigns:
         f_writesigns.write('\n'.join(backup_signs))
 
@@ -148,6 +159,8 @@ if exists(desktop + 'stock_dates.txt'):
         numbers = '0123456789 '
         dates_hr = sorted([d.replace('\n', '').replace(' ', '').upper() for d in f_readdates if d[0] in numbers])
         dates = [str(int(time.mktime(time.strptime(d, '%m/%d/%y'))) - time.timezone) for d in dates_hr]
+        dates_weeks = [datetime.fromtimestamp(int(date_timestamp)).isocalendar()[1] for date_timestamp in dates]
+        print(dates_weeks)
 else:
     with open(desktop + 'stock_dates.txt', 'w') as f_writedates:
         f_writedates.write('\n'.join(backup_dates))
@@ -209,7 +222,8 @@ for sign in signs:
         page = requests.get(first_site.format(sign))
         tree = html.fromstring(page.text)
         dates_from_site = tree.xpath(path_dates)
-        for date in [x for x in dates if x in dates_from_site]:
+        valid_dates = [x for x in dates_from_site if week(x) in dates_weeks]
+        for date in valid_dates:
             all_data[sign][date] = []
             print('.', end='')
             page = requests.get(site.format(sign, date))
