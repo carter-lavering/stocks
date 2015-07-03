@@ -49,6 +49,29 @@ def ifttt(action, v1='', v2='', v3=''):
     requests.post('https://maker.ifttt.com/trigger/{0}/with/key/bgj70H05l-3HBc'
     'cRCYvERV'.format(action), data={'value1': v1, 'value2': v2, 'value3': v3})
 
+def get_sheet_corner(excel_sheet):
+    """Returns the x and y values of the upper left corner of an openpyxl Excel spreadsheet.
+    
+    Returns the Excel coordinates (meaning it starts at 1)."""
+    # I have to use x and y because rows and columns get me confused about which way they go
+    # Also they start at 1
+    first_x = 0
+    first_y = 0
+    corner_found = False
+    while corner_found == False:
+        for x in range(first_x, -1, -1):
+            y = first_x - x
+            temp_cell = excel_sheet.cell(row=y + 1, column=x + 1)
+            if temp_cell.value:
+                return(x + 1, y + 1)
+                corner_found = True
+        first_x += 1
+
+excel_test_path = expanduser('~') + '\\Desktop\\test_excel.xlsx'
+excel_test_book = openpyxl.load_workbook(excel_test_path)
+excel_test_sheet = excel_test_book.active
+print(get_sheet_corner(excel_test_sheet))  # Testing purposes
+
 def week(timestamp):
     """Returns the ISO calendar week number of a given timestamp.
     
