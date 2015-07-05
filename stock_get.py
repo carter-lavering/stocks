@@ -65,6 +65,8 @@ def get_sheet_corner(workbook_path, sheet_name=None):
     first_y = 0
     corner_found = False
     while corner_found == False:
+        if first_x >= 1000:
+            raise RuntimeError('No data found for 1000 columns')
         for x in range(first_x, -1, -1):
             y = first_x - x
             temp_cell = ws.cell(row=y + 1, column=x + 1)
@@ -89,29 +91,27 @@ def read_sheet_column(workbook_path, sheet_name=None, headers=True):
         ws = wb.active
     x = corner[0]
     if headers:
-        y = corner[1] + 1
+        y = corner[1] + 1  # Don't want the headers in the data
     else:
         y = corner[1]
     read_cell = ws.cell(row=y, column=x)
     while read_cell.value:
         read_cell = ws.cell(row=y, column=x)
-        print(read_cell.value)
         if x == 1:
             output_cells.append(read_cell.value)
         else:
             adjacent_cell = ws.cell(row=y-1, column=x)
             if '#' not in str(adjacent_cell.value):
                 output_cells.append(read_cell.value)
-        x += 1
+        if output_cells[-1] == None:
+            del output_cells[-1]
+        y += 1
     return output_cells
-
-print(read_sheet_column(expanduser('~') + '\\Desktop\\test_excel.xlsx'))
 
 def week(timestamp):
     """Returns the ISO calendar week number of a given timestamp.
     
     Timestamp can be either an integer or a string."""
-    print(type(timestamp))
     return datetime.fromtimestamp(int(timestamp)).isocalendar()[1]
 
 def notify(message):
@@ -212,20 +212,38 @@ if not signs:
 
 print(fill('{0} signs:\n{1}'.format(len(signs), ', '.join(signs)), 80))
 
-if exists(desktop + 'stock_dates.txt'):
-    with open(desktop + 'stock_dates.txt', 'r') as f_readdates:
-        numbers = '0123456789 '
-        dates_hr = sorted([d.replace('\n', '').replace(' ', '').upper() for d in f_readdates if d[0] in numbers])
-        dates = [str(int(time.mktime(time.strptime(d, '%m/%d/%y'))) - time.timezone) for d in dates_hr]
-        dates_weeks = [datetime.fromtimestamp(int(date_timestamp)).isocalendar()[1] for date_timestamp in dates]
-        print(dates_weeks)
-else:
-    with open(desktop + 'stock_dates.txt', 'w') as f_writedates:
-        f_writedates.write('\n'.join(backup_dates))
-    print('stock_dates.txt has been created. Please restart the program.')
-    end_script()
+# if exists(desktop + 'stock_dates.txt'):
+#     with open(desktop + 'stock_dates.txt', 'r') as f_readdates:
+#         numbers = '0123456789 '
+#         dates_hr = sorted([d.replace('\n', '').replace(' ', '').upper() for d in f_readdates if d[0] in numbers])
+#         dates = [str(int(time.mktime(time.strptime(d, '%m/%d/%y'))) - time.timezone) for d in dates_hr]
+#         dates_weeks = [datetime.fromtimestamp(int(date_timestamp)).isocalendar()[1] for date_timestamp in dates]
+# else:
+#     with open(desktop + 'stock_dates.txt', 'w') as f_writedates:
+#         f_writedates.write('\n'.join(backup_dates))
+#     print('stock_dates.txt has been created. Please restart the program.')
+#     end_script()
+try:
+    signs = read_sheet_column(desktop + 'stock_signs.xlsx')
+except FileNotFoundError:
+    write_signs = openpyxl.Workbook()
+    write_signs.save(desktop + 'stock_signs.xlsx')
+    print('Please go to your desktop and put the dates you want into'
+          ' stock_signs.xlsx. Put hash marks in the cells to the left of the'
+          ' ones you don\'t want.')
+    end_script(terminate=False)
+try:
+    dates = read_sheet_column(desktop + 'stock_dates.xlsx')
+    dates_weeks = [date.isocalendar()[1] for date in dates]
+except FileNotFoundError:
+    write_dates = openpyxl.Workbook()
+    write_dates.save(desktop + 'stock_dates.xlsx')
+    print('Please go to your desktop and put the signs you want into'
+          ' stock_dates.xlsx. Put hash marks in the cells to the left of the'
+          ' ones you don\'t want.')
+    end_script(terminate=False)
 
-print('{0} dates:'.format(len(dates_hr)), ', '.join(dates_hr))
+print('{0} dates'.format(len(dates)))
 
 ## Miscellaneous Startup
 
