@@ -39,7 +39,7 @@ except ImportError as e:
 def exists(path):
     """Checks to see if a file exists."""
     try:
-        with open(path) as test_file:
+        with open(path):
             pass
         return True
     except FileNotFoundError:
@@ -117,18 +117,6 @@ def week(timestamp):
 def notify(message):
     """Gives a Pushbullet message."""
     ifttt('notify', v1=message)
-
-def diff(x, y):
-    """Returns the difference between two numbers."""
-    return abs(x - y)
-
-def closest_num(n, lst):
-    """Returns the closest number to n in lst.
-    
-    Assumes all items in the list are numbers."""
-    lst_by_diffs = {abs(n - x): x for x in lst}
-    diffs = sorted([x for x in lst_by_diffs])
-    return lst_by_diffs[diffs[0]]
 
 def end_script(terminate=True):
     """Ends program."""
@@ -210,8 +198,6 @@ if not signs:
     with open(desktop + 'stock_signs.txt', 'w') as f_writesigns:
         f_writesigns.write('\n'.join(backup_signs))
 
-print(fill('{0} signs:\n{1}'.format(len(signs), ', '.join(signs)), 80))
-
 # if exists(desktop + 'stock_dates.txt'):
 #     with open(desktop + 'stock_dates.txt', 'r') as f_readdates:
 #         numbers = '0123456789 '
@@ -243,7 +229,7 @@ except FileNotFoundError:
           ' ones you don\'t want.')
     end_script(terminate=False)
 
-print('{0} dates'.format(len(dates)))
+print('{0} signs, {1} dates'.format(len(signs), len(dates)))
 
 ## Miscellaneous Startup
 
@@ -388,7 +374,7 @@ assert data
 no_data = [sign for sign in in_data if not in_data[sign]]
 if errors != []:
     print('The following stocks failed to download: {0}.'.format(', '.join(errors)))
-if no_data != []:
+if [x for x in no_data if x not in errors] != []:
     print('The following stocks returned no data: {0}.'.format(', '.join([x for x in no_data if x not in errors])))
 
 try:
@@ -452,10 +438,6 @@ excel_close(excel)
 end = time.time()
 print(' Completed in {0:.2f} seconds'.format(end - write_start))
 print('Script completed in {0:.2f} seconds'.format(end - start))
-if errors != []:
-    print('The following stocks failed to download: {0}.'.format(', '.join(errors)))
-else:
-    print('All stocks downloaded successfully.')
 
 try:
     os.startfile(opath)
