@@ -198,6 +198,8 @@ if not signs:
     with open(desktop + 'stock_signs.txt', 'w') as f_writesigns:
         f_writesigns.write('\n'.join(backup_signs))
 
+status = {}
+
 # if exists(desktop + 'stock_dates.txt'):
 #     with open(desktop + 'stock_dates.txt', 'r') as f_readdates:
 #         numbers = '0123456789 '
@@ -279,8 +281,8 @@ for sign in signs:
     except IndexError:
         print(' Error: stock does not exist.', end='')
         errors.append(sign)
+        status[sign] = 'ERROR: stock does not exist'
     else:
-        valid = 0
         page = requests.get(first_site.format(sign))
         tree = html.fromstring(page.text)
         dates_from_site = tree.xpath(path_dates)
@@ -439,13 +441,14 @@ end = time.time()
 print(' Completed in {0:.2f} seconds'.format(end - write_start))
 print('Script completed in {0:.2f} seconds'.format(end - start))
 
-try:
-    os.startfile(opath)
-except OSError:
-    print('Unable to open Excel. The file is called {0}.'.format(path.split('/')[-1]))
-
 notify('Your script has just been run on {0}, taking a total of {1} seconds to download and write {2} stocks and {3} dates.'.format(socket.gethostname(), end - start, len(signs), len(dates)))
 
 requests.post('https://maker.ifttt.com/trigger/script_logged/with/key/bgj70H05l-3HBccRCYvERV', data={'value1': '{0} ||| {1} ||| {2} ||| {3}'.format(socket.gethostname(), len(signs), len(dates), end - start)})
 
+if 'y' in input('Would you like to open the file in Excel? (y/n)').lower():
+    try:
+        os.startfile(opath)
+    except OSError:
+        print('Unable to open Excel. The file is called {0}.'.format(path.split('/')[-1]))
+        
 end_script(terminate=False)
