@@ -148,18 +148,6 @@ def rearrange(lst, order):
     Indexing starts at 0."""
     return [lst[x] for x in order]
 
-def empty_list(lst):
-    """Returns whether a list contains no data.
-    
-    Recursively calls itself if it finds a list."""
-    empty = True
-    for x in lst:
-        if type(x) == list:
-            empty = empty_list(x)
-        else:
-            empty = False
-    return empty
-
 isdev = socket.gethostname() == 'c-laptop'
 
 if isdev:
@@ -200,17 +188,6 @@ if not signs:
 
 status = {}
 
-# if exists(desktop + 'stock_dates.txt'):
-#     with open(desktop + 'stock_dates.txt', 'r') as f_readdates:
-#         numbers = '0123456789 '
-#         dates_hr = sorted([d.replace('\n', '').replace(' ', '').upper() for d in f_readdates if d[0] in numbers])
-#         dates = [str(int(time.mktime(time.strptime(d, '%m/%d/%y'))) - time.timezone) for d in dates_hr]
-#         dates_weeks = [datetime.fromtimestamp(int(date_timestamp)).isocalendar()[1] for date_timestamp in dates]
-# else:
-#     with open(desktop + 'stock_dates.txt', 'w') as f_writedates:
-#         f_writedates.write('\n'.join(backup_dates))
-#     print('stock_dates.txt has been created. Please restart the program.')
-#     end_script()
 try:
     signs = read_sheet_column(desktop + 'stock_signs.xlsx')
 except FileNotFoundError:
@@ -450,7 +427,9 @@ print('Script completed in {0:.2f} seconds'.format(end - start))
 
 notify('Your script has just been run on {0}, taking a total of {1} seconds to download and write {2} stocks and {3} dates.'.format(socket.gethostname(), end - start, len(signs), len(dates)))
 
-requests.post('https://maker.ifttt.com/trigger/script_logged/with/key/bgj70H05l-3HBccRCYvERV', data={'value1': '{0} ||| {1} ||| {2} ||| {3}'.format(socket.gethostname(), len(signs), len(dates), end - start)})
+# requests.post('https://maker.ifttt.com/trigger/script_logged/with/key/bgj70H05l-3HBccRCYvERV', data={'value1': '{0} ||| {1} ||| {2} ||| {3}'.format(socket.gethostname(), len(signs), len(dates), end - start)})
+
+ifttt('script_logged', v1='{0} ||| {1} ||| {2} ||| {3}'.format(socket.gethostname(), len(signs), len(dates), end - start))
 
 if 'y' in input('Would you like to open the file in Excel? (y/n) ').lower():
     try:
