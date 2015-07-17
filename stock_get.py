@@ -277,34 +277,40 @@ for sign in signs:
     page = requests.get(site_2.format(sign))
     tree = html.fromstring(page.text)
     try:
-        all_data[sign]['Info'] = [tree.xpath(path)[0] for path in paths_info]
+        all_data[sign]['Info'] = [tree.xpath(paths_info[0])[0]]
     except IndexError:
         print(' Error: stock does not exist.', end='')
         errors.append(sign)
         status[sign] = 'ERROR: stock does not exist'
-    else:
-        page = requests.get(first_site.format(sign))
+        continue
+    
+    try:
+        all_data[sign]['Info'].extend([tree.xpath(path)[0] for path in paths_info[1:]])
+    except IndexError:
+        all_data[sign]['Info'].extend(['EFT', 'EFT'])
+    
+    page = requests.get(first_site.format(sign))
+    tree = html.fromstring(page.text)
+    dates_from_site = tree.xpath(path_dates)
+    valid_dates = [x for x in dates_from_site if week(x) in dates_weeks]
+    for date in valid_dates:
+        all_data[sign][date] = []
+        print('.', end='')
+        page = requests.get(site.format(sign, date))
         tree = html.fromstring(page.text)
-        dates_from_site = tree.xpath(path_dates)
-        valid_dates = [x for x in dates_from_site if week(x) in dates_weeks]
-        for date in valid_dates:
-            all_data[sign][date] = []
-            print('.', end='')
-            page = requests.get(site.format(sign, date))
-            tree = html.fromstring(page.text)
-            left_data = tree.xpath(left_col)  # So we know how many rows there are
-            exists = True
-            for row_n in range(len(left_data)):
-                temp_row = tree.xpath(path_table.format(row_n + 1))
-                try:
-                    temp_row.insert(0, tree.xpath(path_last.format(sign))[0])
-                except IndexError as e:
-                    exists = False
-                if exists:
-                    all_data[sign][date].append(temp_row)
-            if not exists:
-                print(' Stock does not exist.', end='')
-                break
+        left_data = tree.xpath(left_col)  # So we know how many rows there are
+        exists = True
+        for row_n in range(len(left_data)):
+            temp_row = tree.xpath(path_table.format(row_n + 1))
+            try:
+                temp_row.insert(0, tree.xpath(path_last.format(sign))[0])
+            except IndexError as e:
+                exists = False
+            if exists:
+                all_data[sign][date].append(temp_row)
+        if not exists:
+            print(' Stock does not exist.', end='')
+            break
 
 print()  # Allow printing of the last line
 
@@ -399,23 +405,24 @@ for row in data:
                 if '-' in row[i]:
                     row[i] = str(row[i])
 
-data_sector = {r[3]: [] for r in data}
+data_sector = {r[2]: [] for r in data}
 for r in data:
-    data_sector[r[3]].append(r)
+    data_sector[r[2]].append(r)
 
 
 ## Output Data
 
 write_start = time.time()
 
+
 sheets = {s: excel.add_worksheet(s) for s in data_sector}
 def_r_offset, def_c_offset = 5, 1  # Defaults
 
-pt = excel.add_format({'num_format': '#,##0.00\%'})
-ft = excel.add_format({'num_format': '#,##0.00'})
-it = excel.add_format({'num_format': '#,##0'})
-sr = excel.add_format({})
-fa = excel.add_format({})
+pt = excel.add_format({'num_format': '#,##0.00\%'})  # percent
+ft = excel.add_format({'num_format': '#,##0.00'})  # float
+it = excel.add_format({'num_format': '#,##0'})  # int
+sr = excel.add_format({})  # str
+fa = excel.add_format({})  # formula
 
 print('Writing data...', end='')
 
@@ -445,7 +452,7 @@ notify('Your script has just been run on {0}, taking a total of {1} seconds to d
 
 requests.post('https://maker.ifttt.com/trigger/script_logged/with/key/bgj70H05l-3HBccRCYvERV', data={'value1': '{0} ||| {1} ||| {2} ||| {3}'.format(socket.gethostname(), len(signs), len(dates), end - start)})
 
-if 'y' in input('Would you like to open the file in Excel? (y/n)').lower():
+if 'y' in input('Would you like to open the file in Excel? (y/n) ').lower():
     try:
         os.startfile(opath)
     except OSError:
