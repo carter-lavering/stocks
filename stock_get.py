@@ -16,25 +16,11 @@ import socket
 from subprocess import call
 import sys
 
-try:
-    from lxml import html
-    import openpyxl
-    import requests
-    from textwrap import fill
-    import xlsxwriter
-except ImportError as e:
-    e = str(e)
-    print(e)
-    module = e[e.find("'") + 1:e.find("'", -1)]
-    if 'y' in input(
-            'Module "{0}" is not installed. Would you like to install it?'
-            ' (y/n)\n'.format(module)):
-        call('pip install {0}'.format(module))
-        print('Please restart the program.'.format(module))
-        sys.exit()
-    else:
-        print('This module is important. Please install it.')
-        sys.exit()
+from lxml import html
+import openpyxl
+import requests
+from textwrap import fill
+import xlsxwriter
 
 ## Define Functions
 
