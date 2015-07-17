@@ -26,7 +26,9 @@ except ImportError as e:
     e = str(e)
     print(e)
     module = e[e.find("'") + 1:e.find("'", -1)]
-    if 'y' in input('Module "{0}" is not installed. Would you like to install it? (y/n)\n'.format(module)):
+    if 'y' in input(
+            'Module "{0}" is not installed. Would you like to install it?'
+            ' (y/n)\n'.format(module)):
         call('pip install {0}'.format(module))
         print('Please restart the program.'.format(module))
         sys.exit()
@@ -158,16 +160,6 @@ else:
 
 desktop = expanduser('~') + '\\Desktop\\'
 
-## Define Constants
-
-# Backup list of stock signs as of 5/26/2015
-backup_signs = ['A', 'ABC', 'ABT', 'ACE', 'ACN', 'ACT', 'ADBE', 'ADI', 'AET', 'AFL', 'AGN', 'AGU', 'AIG', 'ALL', 'ALXN', 'AMGN', 'AMT', 'AMZN', 'APA', 'APC', 'APD', 'AXP', 'AZO', 'BA', 'BAC', 'BAM', 'BAX', 'BBBY', 'BDX', 'BEN', 'BFB', 'BHI', 'BHP', 'BIIB', 'BMY', 'BP', 'BRK-B', 'BUD', 'BWA', 'BXP', 'C', 'CAH', 'CAM', 'CAT', 'CBS', 'CELG', 'CERN', 'CHKP', 'CI', 'CMCSA', 'CME', 'CMG', 'CMI', 'CNQ', 'COF', 'COG', 'COH', 'COST', 'COV', 'CS', 'CSCO', 'CSX', 'CTSH', 'CTXS', 'CVS', 'CVX', 'DAL', 'DD', 'DEO', 'DFS', 'DGX', 'DHR', 'DIS', 'DLPH', 'DOV', 'DTV', 'DVA', 'DVN', 'EBAY', 'ECL', 'EL', 'EMC', 'EMN', 'ENB', 'EOG', 'EPD', 'ESRX', 'ESV', 'ETN', 'F', 'FB', 'FDX', 'FIS', 'FLR', 'GD', 'GE', 'GILD', 'GIS', 'GLW', 'GM', 'GPS', 'GSK', 'GWW', 'HAL', 'HD', 'HES', 'HMC', 'HOG', 'HON', 'HOT', 'HST', 'HSY', 'HUM', 'ICE', 'INTC', 'IP', 'ISRG', 'JCI', 'JNJ', 'JPM', 'KMP', 'KMX', 'KO', 'KR', 'KRFT', 'KSS', 'L', 'LLY', 'LOW', 'LVS', 'LYB', 'M', 'MA', 'MAR', 'MAT', 'MCD', 'MCK', 'MDLZ', 'MDT', 'MET', 'MFC', 'MHFI', 'MMC', 'MO', 'MON', 'MOS', 'MPC', 'MRK', 'MRO', 'MRO', 'MS', 'MSFT', 'MUR', 'MYL', 'NBL', 'NE', 'NEM', 'NKE', 'NLSN', 'NOV','NSC', 'NUE', 'NVS', 'ORCL', 'ORLY', 'OXY', 'PCP', 'PEP', 'PFE', 'PG', 'PH', 'PM', 'PNC', 'PNR', 'PPG', 'PRU', 'PSX', 'PX', 'PXD', 'QCOM', 'QQQ', 'REGN', 'RIO', 'RL', 'ROP', 'ROST', 'RRC', 'RSG', 'SBUX', 'SE', 'SHW', 'SJM', 'SLB', 'SLM', 'SNDK', 'SPG', 'STT', 'STZ', 'SU', 'SWK', 'SYK', 'TCK', 'TEL', 'TJX', 'TM', 'TMO', 'TROW', 'TRV', 'TWC', 'TWX', 'TYC', 'UAL', 'UNH', 'UNP', 'UPS', 'UTX', 'V', 'VFC', 'VIAB', 'VLO', 'VNO', 'VZ', 'WAG', 'WDC', 'WFC', 'WFM', 'WMB', 'WMT', 'WY', 'WYNN', 'YHOO', 'YUM', 'ZMH']
-
-my_backup_signs = ['AAPL', 'INTC', 'GOOG', 'ASDF', 'WMT', 'NFLX']
-
-# Backup list of dates as of 6/24/2015
-backup_dates = ['07/02/15', '07/10/15', '07/24/15', '07/31/15', '07/17/15', '08/21/15', '09/18/15', '10/16/15', '11/20/15', '12/18/15']
-
 ## Get Signs and Dates
 
 print('Opening files...')
@@ -175,7 +167,10 @@ print('Opening files...')
 if exists(desktop + 'stock_signs.txt'):
     with open(desktop + 'stock_signs.txt', 'r') as f_readsigns:
         alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '
-        signs = sorted([s.replace('\n', '').replace(' ', '').upper() for s in f_readsigns if s[0] in alphabet])
+        signs = sorted([
+            s.replace('\n', '').replace(' ', '').upper()
+            for s in f_readsigns if s[0] in alphabet
+        ])
 else:
     with open(desktop + 'stock_signs.txt', 'w') as f_writesigns:
         f_writesigns.write('\n'.join(backup_signs))
@@ -216,8 +211,8 @@ dt = datetime.fromtimestamp(time.time())
 date = dt.strftime('%d-%m-%Y')
 
 if not isdev:
-    opath = 'C:/Users/Gary/Documents/Option_tables/Option_Model_Files/'
-    'OptionReportDirectory/options_report_{0}.xlsx'.format(date)
+    opath = ('C:/Users/Gary/Documents/Option_tables/Option_Model_Files/'
+             'OptionReportDirectory/options_report_{0}.xlsx'.format(date))
 else:
     opath = 'options_report_{0}.xlsx'.format(date)
 
@@ -262,7 +257,9 @@ for sign in signs:
         continue
     
     try:
-        all_data[sign]['Info'].extend([tree.xpath(path)[0] for path in paths_info[1:]])
+        all_data[sign]['Info'].extend(
+            [tree.xpath(path)[0] for path in paths_info[1:]]
+        )
     except IndexError:
         all_data[sign]['Info'].extend(['EFT', 'EFT'])
     
@@ -270,7 +267,7 @@ for sign in signs:
     tree = html.fromstring(page.text)
     dates_from_site = tree.xpath(path_dates)
     valid_dates = [x for x in dates_from_site if week(x) in dates_weeks]
-    if not valid_dates:  # No dates to download, so no dates to do anything with
+    if not valid_dates:
         status[sign] = 'ERROR: No valid dates'
         continue
     for date in valid_dates:
@@ -301,6 +298,7 @@ try:
         ' stock)'.format(
             download_end - start,
             (download_end - start) / len(signs)
+        )
     )
 except ZeroDivisionError:
     error(
@@ -369,9 +367,13 @@ assert data
 
 no_data = [sign for sign in in_data if not in_data[sign]]
 if errors != []:
-    print('The following stocks failed to download: {0}.'.format(', '.join(errors)))
+    print('The following stocks failed to download: {0}.'.format(
+        ', '.join(errors)
+    ))
 if [x for x in no_data if x not in errors] != []:
-    print('The following stocks returned no data: {0}.'.format(', '.join([x for x in no_data if x not in errors])))
+    print('The following stocks returned no data: {0}.'.format(
+        ', '.join([x for x in no_data if x not in errors])
+    ))
 
 try:
     if len(formats) != len(headers) or len(headers) != len(data[0]):
@@ -388,7 +390,8 @@ for row in data:
             row[i] = float(row[i].replace('%', ''))
         else:
             try:
-                row[i] = eval('{0}(row[i])'.format(formats[i].replace('_f', '')))
+                row[i] = eval('{0}(row[i])'.format(formats[i].replace('_f',
+                                                                      '')))
             except ValueError:
                 if '-' in row[i]:
                     row[i] = str(row[i])
@@ -424,9 +427,19 @@ for sector in data_sector:
     for r, row in enumerate(data_sector[sector]):
         for c, cell in enumerate(row):
             if '_f' in formats[c]:
-                sheets[sector].write(r + r_offset, c + c_offset, cell.format(n=str(r + r_offset + 1)), eval(formats[c][0] + formats[c][-3]))
+                sheets[sector].write(
+                    r + r_offset,
+                    c + c_offset,
+                    cell.format(n=str(r + r_offset + 1)),
+                    eval(formats[c][0] + formats[c][-3])
+                )
             else:
-                sheets[sector].write(r + r_offset, c + c_offset, cell, eval(formats[c][0] + formats[c][-1]))
+                sheets[sector].write(
+                    r + r_offset,
+                    c + c_offset,
+                    cell,
+                    eval(formats[c][0] + formats[c][-1])
+                )
 
 excel_close(excel)
 
@@ -436,16 +449,29 @@ end = time.time()
 print(' Completed in {0:.2f} seconds'.format(end - write_start))
 print('Script completed in {0:.2f} seconds'.format(end - start))
 
-notify('Your script has just been run on {0}, taking a total of {1} seconds to download and write {2} stocks and {3} dates.'.format(socket.gethostname(), end - start, len(signs), len(dates)))
+notify(
+    'Your script has just been run on {0}, taking a total of {1} seconds to'
+    ' download and write {2} stocks and {3} dates.'.format(
+        socket.gethostname(),
+        end - start,
+        len(signs),
+        len(dates)
+    )
+)
 
-# requests.post('https://maker.ifttt.com/trigger/script_logged/with/key/bgj70H05l-3HBccRCYvERV', data={'value1': '{0} ||| {1} ||| {2} ||| {3}'.format(socket.gethostname(), len(signs), len(dates), end - start)})
-
-ifttt('script_logged', v1='{0} ||| {1} ||| {2} ||| {3}'.format(socket.gethostname(), len(signs), len(dates), end - start))
+ifttt('script_logged', v1='{0} ||| {1} ||| {2} ||| {3}'.format(
+    socket.gethostname(),
+    len(signs),
+    len(dates),
+    end - start
+))
 
 if 'y' in input('Would you like to open the file in Excel? (y/n) ').lower():
     try:
         os.startfile(opath)
     except OSError:
-        print('Unable to open Excel. The file is called {0}.'.format(path.split('/')[-1]))
+        print('Unable to open Excel. The file is called {0}.'.format(
+            path.split('/')[-1])
+        )
         
 end_script(terminate=False)
