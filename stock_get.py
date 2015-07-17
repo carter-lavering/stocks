@@ -1,4 +1,9 @@
-## To-Do List
+# #####  ###        ####   ### 
+#   #   #   #       #   # #   #
+#   #   #   # ##### #   # #   #
+#   #   #   #       #   # #   #
+#   #    ###        ####   ### 
+
 
 # [X] Separate sheets for sectors
 # [X] Add easier way to input dates
