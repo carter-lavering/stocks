@@ -270,6 +270,9 @@ for sign in signs:
     tree = html.fromstring(page.text)
     dates_from_site = tree.xpath(path_dates)
     valid_dates = [x for x in dates_from_site if week(x) in dates_weeks]
+    if not valid_dates:  # No dates to download, so no dates to do anything with
+        status[sign] = 'ERROR: No valid dates'
+        continue
     for date in valid_dates:
         all_data[sign][date] = []
         print('.', end='', flush=True)
@@ -293,9 +296,17 @@ print()  # Allow printing of the last line
 
 download_end = time.time()
 try:
-    print('Download completed in {0:.2f} seconds (average {0:.2f} seconds per stock)'.format(download_end - start, (download_end - start) / len(signs)))
+    print(
+        'Download completed in {0:.2f} seconds (average {0:.2f} seconds per'
+        ' stock)'.format(
+            download_end - start,
+            (download_end - start) / len(signs)
+    )
 except ZeroDivisionError:
-    error('No stock signs found. Please enter them into stock_signs.txt on your desktop and try again.')
+    error(
+        'No stock signs found. Please enter them into stock_signs.txt on your'
+        ' desktop and try again.'
+    )
 
 ## Format Data
 
