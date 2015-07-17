@@ -10,24 +10,25 @@
 # [X] Add separate files for dates and signs
 # [ ] Automated date validity check
 
-## Import Modules
+# Import Modules
 
 
-from datetime import datetime
-import time
 import os
-from os.path import expanduser
 import socket
-from subprocess import call
 import sys
+import time
+from datetime import datetime
+from os.path import expanduser
+from subprocess import call
+from textwrap import fill
 
-from lxml import html
 import openpyxl
 import requests
-from textwrap import fill
 import xlsxwriter
+from lxml import html
 
-## Define Functions
+
+# Define Functions
 
 def exists(path):
     """Checks to see if a file exists."""
@@ -38,9 +39,12 @@ def exists(path):
     except FileNotFoundError:
         return False
 
+
 def ifttt(action, v1='', v2='', v3=''):
-    requests.post('https://maker.ifttt.com/trigger/{0}/with/key/bgj70H05l-3HBc'
-    'cRCYvERV'.format(action), data={'value1': v1, 'value2': v2, 'value3': v3})
+    requests.post(
+        'https://maker.ifttt.com/trigger/{0}/with/key/bgj70H05l-3HBccRCYvERV'
+        .format(action), data={'value1': v1, 'value2': v2, 'value3': v3})
+
 
 def get_sheet_corner(workbook_path, sheet_name=None):
     """Returns the column and row of the upper left corner of a spreadsheet.
@@ -57,7 +61,7 @@ def get_sheet_corner(workbook_path, sheet_name=None):
     first_x = 0
     first_y = 0
     corner_found = False
-    while corner_found == False:
+    while not corner_found:
         if first_x >= 1000:
             raise RuntimeError('No data found for 1000 columns')
         for x in range(first_x, -1, -1):
@@ -67,6 +71,7 @@ def get_sheet_corner(workbook_path, sheet_name=None):
                 return(x + 1, y + 1)
                 corner_found = True
         first_x += 1
+
 
 def read_sheet_column(workbook_path, sheet_name=None, headers=True):
     """Reads the first column in a given sheet.
@@ -101,15 +106,18 @@ def read_sheet_column(workbook_path, sheet_name=None, headers=True):
         y += 1
     return output_cells
 
+
 def week(timestamp):
     """Returns the ISO calendar week number of a given timestamp.
 
     Timestamp can be either an integer or a string."""
     return datetime.fromtimestamp(int(timestamp)).isocalendar()[1]
 
+
 def notify(message):
     """Gives a Pushbullet message."""
     ifttt('notify', v1=message)
+
 
 def end_script(terminate=True):
     """Ends program."""
@@ -119,10 +127,12 @@ def end_script(terminate=True):
     elif terminate:
         sys.exit()
 
+
 def error(msg):
     print(msg)
     notify(msg)
     end_script()
+
 
 def excel_close(file):
     try:
@@ -131,9 +141,10 @@ def excel_close(file):
     except PermissionError:
         return False
         __ = input('Permissions denied! Please close all Excel windows and try'
-        ' again.')
+                   ' again.')
         if excel_close(file):
             pass
+
 
 def rearrange(lst, order):
     """Returns lst but in the order of order.
@@ -151,7 +162,7 @@ else:
 
 desktop = expanduser('~') + '\\Desktop\\'
 
-## Get Signs and Dates
+# Get Signs and Dates
 
 print('Opening files...')
 
@@ -196,7 +207,7 @@ except FileNotFoundError:
 
 print('{0} signs, {1} dates'.format(len(signs), len(dates)))
 
-## Miscellaneous Startup
+# Miscellaneous Startup
 
 dt = datetime.fromtimestamp(time.time())
 date = dt.strftime('%d-%m-%Y')
@@ -211,11 +222,11 @@ try:
     excel = xlsxwriter.Workbook(opath)
 except:
     error('Unable to open workbook. Please close it if it is open and try '
-        'again.')
+          'again.')
 
 start = time.time()
 
-## Download Data
+# Download Data
 
 site = 'https://finance.yahoo.com/q/op?s={0}&date={1}'  # .format(sign, date)
 first_site = 'https://finance.yahoo.com/q/op?s={0}'  # .format(sign)
@@ -227,7 +238,8 @@ path_dates = '//select//@value'
 
 site_2 = 'https://finance.yahoo.com/q/in?s={0}+Industry'  # .format(sign)
 paths_info = ['//*[@id="yfi_rt_quote_summary"]/div[1]/div/h2/text()',
-    '//tr[1]/td/a/text()', '//tr[2]/td/a/text()']
+              '//tr[1]/td/a/text()',
+              '//tr[2]/td/a/text()']
 all_data = {}
 errors = []
 
@@ -297,7 +309,7 @@ except ZeroDivisionError:
         ' desktop and try again.'
     )
 
-## Format Data
+# Format Data
 
 formats = [
     'str', 'str', 'str', 'str', 'float',
@@ -334,8 +346,10 @@ for sign in all_data:
                 hrd_str = '/'.join((hrd_lst[1], hrd_lst[2], hrd_lst[0]))
                 try:
                     row = ([sign] + all_data[sign]['Info'][0:3] +
-                        rearrange(r, [0, 2]) + [hrd_str, 'C'] +
-                        rearrange(r, [1, 4, 5, 9, 8, 3]) + formulas)
+                           rearrange(r, [0, 2]) +
+                           [hrd_str, 'C'] +
+                           rearrange(r, [1, 4, 5, 9, 8, 3]) +
+                           formulas)
                 except IndexError as ie:
                     raise IndexError(row) from ie
                 data.append(row)
@@ -392,7 +406,7 @@ for r in data:
     data_sector[r[2]].append(r)
 
 
-## Output Data
+# Output Data
 
 write_start = time.time()
 
@@ -434,7 +448,7 @@ for sector in data_sector:
 
 excel_close(excel)
 
-## Finish Up
+# Finish Up
 
 end = time.time()
 print(' Completed in {0:.2f} seconds'.format(end - write_start))
