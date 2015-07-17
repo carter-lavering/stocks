@@ -1,8 +1,8 @@
-# #####  ###        ####   ### 
+# #####  ###        ####   ###
 #   #   #   #       #   # #   #
 #   #   #   # ##### #   # #   #
 #   #   #   #       #   # #   #
-#   #    ###        ####   ### 
+#   #    ###        ####   ###
 
 
 # [X] Separate sheets for sectors
@@ -44,7 +44,7 @@ def ifttt(action, v1='', v2='', v3=''):
 
 def get_sheet_corner(workbook_path, sheet_name=None):
     """Returns the column and row of the upper left corner of a spreadsheet.
-    
+
     Just to clarify, if the first cell with data is A1, this script will return
     (1, 1). This is how Excel its numbers."""
     # I have to use x and y because rows and columns get me confused about
@@ -70,7 +70,7 @@ def get_sheet_corner(workbook_path, sheet_name=None):
 
 def read_sheet_column(workbook_path, sheet_name=None, headers=True):
     """Reads the first column in a given sheet.
-    
+
     If headers is True, then loop through all the cells below the upper-left
     corner until a blank space is found. Return a list of all the cells. If a
     cell has a hashtag in the cell to the left of it, do not return that cell.
@@ -103,7 +103,7 @@ def read_sheet_column(workbook_path, sheet_name=None, headers=True):
 
 def week(timestamp):
     """Returns the ISO calendar week number of a given timestamp.
-    
+
     Timestamp can be either an integer or a string."""
     return datetime.fromtimestamp(int(timestamp)).isocalendar()[1]
 
@@ -137,7 +137,7 @@ def excel_close(file):
 
 def rearrange(lst, order):
     """Returns lst but in the order of order.
-    
+
     Indexing starts at 0."""
     return [lst[x] for x in order]
 
@@ -246,14 +246,14 @@ for sign in signs:
         errors.append(sign)
         status[sign] = 'ERROR: stock does not exist'
         continue
-    
+
     try:
         all_data[sign]['Info'].extend(
             [tree.xpath(path)[0] for path in paths_info[1:]]
         )
     except IndexError:
         all_data[sign]['Info'].extend(['EFT', 'EFT'])
-    
+
     page = requests.get(first_site.format(sign))
     tree = html.fromstring(page.text)
     dates_from_site = tree.xpath(path_dates)
@@ -307,7 +307,7 @@ formats = [
     'percent_f', 'float_f', 'percent_f', 'percent_f', 'str_f'
 ]
 headers = [
-    'co_symbol', 'company', 'industry', 'sector', 'Last', 'Option', 'exp_date',
+    'co_symbol', 'company', 'sector', 'industry', 'Last', 'Option', 'exp_date',
     'Call', 'Strike', 'Bid', 'Ask', 'Open interest', 'Vol', 'Last',
     datetime.now().strftime('%m/%d/%y'), 'days', '60000', ' $invested',
     '$prem', ' prem%', 'annPrem%', ' MaxRet', ' Max%', 'annMax%', '10%'
@@ -333,8 +333,8 @@ for sign in all_data:
                     raise IndexError(ie.args, r) from ie
                 hrd_str = '/'.join((hrd_lst[1], hrd_lst[2], hrd_lst[0]))
                 try:
-                    row = ([sign] + all_data[sign]['Info'][0:3] + 
-                        rearrange(r, [0, 2]) + [hrd_str, 'C'] + 
+                    row = ([sign] + all_data[sign]['Info'][0:3] +
+                        rearrange(r, [0, 2]) + [hrd_str, 'C'] +
                         rearrange(r, [1, 4, 5, 9, 8, 3]) + formulas)
                 except IndexError as ie:
                     raise IndexError(row) from ie
@@ -464,5 +464,5 @@ if 'y' in input('Would you like to open the file in Excel? (y/n) ').lower():
         print('Unable to open Excel. The file is called {0}.'.format(
             path.split('/')[-1])
         )
-        
+
 end_script(terminate=False)
