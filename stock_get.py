@@ -272,7 +272,7 @@ for sign in signs:
     valid_dates = [x for x in dates_from_site if week(x) in dates_weeks]
     for date in valid_dates:
         all_data[sign][date] = []
-        print('.', end='')
+        print('.', end='', flush=True)
         page = requests.get(site.format(sign, date))
         tree = html.fromstring(page.text)
         left_data = tree.xpath(left_col)  # So we know how many rows there are
