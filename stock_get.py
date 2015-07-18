@@ -1,26 +1,20 @@
-# #####  ###        ####   ###
-#   #   #   #       #   # #   #
-#   #   #   # ##### #   # #   #
-#   #   #   #       #   # #   #
-#   #    ###        ####   ###
-
-
+# To-Do
 # [X] Separate sheets for sectors
 # [X] Add easier way to input dates
 # [X] Add separate files for dates and signs
 # [ ] Automated date validity check
 
-# Import Modules
+# \_\_\_\_\_  \_      \_  \_\_\_\_      \_\_\_    \_\_\_\_    \_\_\_\_\_
+#      \_      \_\_  \_\_  \_      \_  \_      \_  \_      \_      \_
+#       \_      \_  \_  \_  \_\_\_\_    \_      \_  \_\_\_\_        \_
+#        \_      \_      \_  \_          \_      \_  \_    \_        \_
+#     \_\_\_\_\_  \_      \_  \_            \_\_\_    \_      \_      \_
 
-
-import os
 import socket
 import sys
 import time
 from datetime import datetime
 from os.path import expanduser
-from subprocess import call
-from textwrap import fill
 
 import openpyxl
 import requests
@@ -28,16 +22,11 @@ import xlsxwriter
 from lxml import html
 
 
-# Define Functions
-
-def exists(path):
-    """Checks to see if a file exists."""
-    try:
-        with open(path):
-            pass
-        return True
-    except FileNotFoundError:
-        return False
+# \_\_\_\_    \_\_\_\_\_  \_\_\_\_\_  \_\_\_\_\_  \_      \_  \_\_\_\_
+#  \_      \_  \_          \_              \_      \_\_    \_  \_
+#   \_      \_  \_\_\_\_\_  \_\_\_\_\_      \_      \_  \_  \_  \_\_\_\_
+#    \_      \_  \_          \_              \_      \_    \_\_  \_
+#     \_\_\_\_    \_\_\_\_\_  \_          \_\_\_\_\_  \_      \_  \_\_\_\_
 
 
 def ifttt(action, v1='', v2='', v3=''):
@@ -49,8 +38,7 @@ def ifttt(action, v1='', v2='', v3=''):
 def get_sheet_corner(workbook_path, sheet_name=None):
     """Returns the column and row of the upper left corner of a spreadsheet.
 
-    Just to clarify, if the first cell with data is A1, this script will return
-    (1, 1). This is how Excel its numbers."""
+    Indexing starts at 1, so A1 is (1, 1), not (0, 0)."""
     # I have to use x and y because rows and columns get me confused about
     # which way they go
     wb = openpyxl.load_workbook(workbook_path)
@@ -59,7 +47,6 @@ def get_sheet_corner(workbook_path, sheet_name=None):
     else:
         ws = wb.active
     first_x = 0
-    first_y = 0
     corner_found = False
     while not corner_found:
         if first_x >= 1000:
@@ -68,7 +55,7 @@ def get_sheet_corner(workbook_path, sheet_name=None):
             y = first_x - x
             temp_cell = ws.cell(row=y + 1, column=x + 1)
             if temp_cell.value:
-                return(x + 1, y + 1)
+                return (x + 1, y + 1)
                 corner_found = True
         first_x += 1
 
@@ -101,7 +88,7 @@ def read_sheet_column(workbook_path, sheet_name=None, headers=True):
             adjacent_cell = ws.cell(row=y-1, column=x)
             if '#' not in str(adjacent_cell.value):
                 output_cells.append(read_cell.value)
-        if output_cells[-1] == None:
+        if output_cells[-1] is None:
             del output_cells[-1]
         y += 1
     return output_cells
@@ -140,8 +127,8 @@ def excel_close(file):
         return True
     except PermissionError:
         return False
-        __ = input('Permissions denied! Please close all Excel windows and try'
-                   ' again.')
+        input('Permissions denied! Please close all Excel windows and try'
+              ' again.')
         if excel_close(file):
             pass
 
@@ -152,39 +139,16 @@ def rearrange(lst, order):
     Indexing starts at 0."""
     return [lst[x] for x in order]
 
-isdev = socket.gethostname() == 'c-laptop'
 
+isdev = socket.gethostname() == 'c-laptop'
 if isdev:
     print('Developer mode active')
 else:
     print('User mode active')
     print(expanduser('~') + '\\Desktop\\stock_signs.txt')
-
 desktop = expanduser('~') + '\\Desktop\\'
 
-# Get Signs and Dates
-
 print('Opening files...')
-
-if exists(desktop + 'stock_signs.txt'):
-    with open(desktop + 'stock_signs.txt', 'r') as f_readsigns:
-        alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '
-        signs = sorted([
-            s.replace('\n', '').replace(' ', '').upper()
-            for s in f_readsigns if s[0] in alphabet
-        ])
-else:
-    with open(desktop + 'stock_signs.txt', 'w') as f_writesigns:
-        f_writesigns.write('\n'.join(backup_signs))
-        print('stock_signs.txt has been created. Please restart the program.')
-        end_script()
-
-if not signs:
-    with open(desktop + 'stock_signs.txt', 'w') as f_writesigns:
-        f_writesigns.write('\n'.join(backup_signs))
-
-status = {}
-
 try:
     signs = read_sheet_column(desktop + 'stock_signs.xlsx')
 except FileNotFoundError:
@@ -202,24 +166,27 @@ except FileNotFoundError:
     write_dates.save(desktop + 'stock_dates.xlsx')
     print('Please go to your desktop and put the signs you want into'
           ' stock_dates.xlsx. Put hash marks in the cells to the left of the'
-          ' ones you don\'t want.')
+          " ones you don't want.")
     end_script(terminate=False)
 
-print('{0} signs, {1} dates'.format(len(signs), len(dates)))
+assert signs
+assert dates
 
-# Miscellaneous Startup
+print('{0} signs, {1} dates'.format(len(signs), len(dates)))
 
 dt = datetime.fromtimestamp(time.time())
 date = dt.strftime('%d-%m-%Y')
 
 if not isdev:
-    opath = ('C:/Users/Gary/Documents/Option_tables/Option_Model_Files/'
-             'OptionReportDirectory/options_report_{0}.xlsx'.format(date))
+    opath_xlsx = (
+        'C:/Users/Gary/Documents/Option_tables/Option_Model_Files/'
+        'OptionReportDirectory/options_report_{0}_xlsx.xlsx'.format(date)
+    )
 else:
-    opath = 'options_report_{0}.xlsx'.format(date)
+    opath_xlsx = 'options_report_{0}_xlsx.xlsx'.format(date)
 
 try:
-    excel = xlsxwriter.Workbook(opath)
+    excel_xlsx = xlsxwriter.Workbook(opath_xlsx)
 except:
     error('Unable to open workbook. Please close it if it is open and try '
           'again.')
@@ -245,10 +212,11 @@ errors = []
 
 for sign in signs:
     all_data[sign] = {}
-    print('\n{0:{1}} ({2:{3}} of {4})'.format(
-            sign, len(max(signs, key=len)) + 1, signs.index(sign) + 1,
-            len(str(len(signs))), len(signs)
-        ), end='')
+    print('\n{0:{1}} ({2:{3}} of {4})'.format(sign,
+                                              len(max(signs, key=len)),
+                                              signs.index(sign) + 1,
+                                              len(str(len(signs))),
+                                              len(signs)), end='')
     page = requests.get(site_2.format(sign))
     tree = html.fromstring(page.text)
     try:
@@ -256,7 +224,6 @@ for sign in signs:
     except IndexError:
         print(' Error: stock does not exist.', end='')
         errors.append(sign)
-        status[sign] = 'ERROR: stock does not exist'
         continue
 
     try:
@@ -271,7 +238,7 @@ for sign in signs:
     dates_from_site = tree.xpath(path_dates)
     valid_dates = [x for x in dates_from_site if week(x) in dates_weeks]
     if not valid_dates:
-        status[sign] = 'ERROR: No valid dates'
+        print(' Error: No valid dates.', end='')
         continue
     for date in valid_dates:
         all_data[sign][date] = []
@@ -297,7 +264,7 @@ print()  # Allow printing of the last line
 download_end = time.time()
 try:
     print(
-        'Download completed in {0:.2f} seconds (average {0:.2f} seconds per'
+        'Download completed in {0:.2f} seconds (average {1:.2f} seconds per'
         ' stock)'.format(
             download_end - start,
             (download_end - start) / len(signs)
@@ -335,30 +302,21 @@ formulas = [
 data = []
 
 for sign in all_data:
-    for date in all_data[sign]:
-        if date != 'Info':
-            for r in all_data[sign][date][:]:
-                # human-readable date = hrd
-                try:
-                    hrd_lst = [r[2][-15:-9][x:x + 2] for x in range(0, 6, 2)]
-                except IndexError as ie:
-                    raise IndexError(ie.args, r) from ie
-                hrd_str = '/'.join((hrd_lst[1], hrd_lst[2], hrd_lst[0]))
-                try:
-                    row = ([sign] + all_data[sign]['Info'][0:3] +
-                           rearrange(r, [0, 2]) +
-                           [hrd_str, 'C'] +
-                           rearrange(r, [1, 4, 5, 9, 8, 3]) +
-                           formulas)
-                except IndexError as ie:
-                    raise IndexError(row) from ie
-                data.append(row)
-
-fails = {'Signs': [], 'Dates': []}
-for sign in all_data:
-    for date in all_data[sign]:
-        pass
-# Check that everything that's supposed to be the same length is
+    for date in [date for date in all_data[sign] if date != 'Info']:
+        for r in all_data[sign][date][:]:
+            # human-readable date = hrd
+            try:
+                hrd_lst = [r[2][-15:-9][x:x + 2] for x in range(0, 6, 2)]
+            except IndexError as ie:
+                raise IndexError(ie.args, r) from ie
+            hrd_str = '/'.join((hrd_lst[1], hrd_lst[2], hrd_lst[0]))
+            row = ([sign] +
+                   all_data[sign]['Info'][0:3] +
+                   rearrange(r, [0, 2]) +
+                   [hrd_str, 'C'] +
+                   rearrange(r, [1, 4, 5, 9, 8, 3]) +
+                   formulas)
+            data.append(row)
 
 in_data = {}
 for sign in signs:
@@ -367,98 +325,92 @@ for sign in signs:
         for cell in row:
             if sign in cell:
                 in_data[sign] = True
+                break
 
+# Make sure it actually has things in it
 assert data
+# Make sure everything's the same length
+assert len(headers) == len(data[0])
 
-no_data = [sign for sign in in_data if not in_data[sign]]
+no_data = [sign for sign in in_data if not in_data[sign] if sign not in errors]
 if errors != []:
     print('The following stocks failed to download: {0}.'.format(
         ', '.join(errors)
     ))
 if [x for x in no_data if x not in errors] != []:
     print('The following stocks returned no data: {0}.'.format(
-        ', '.join([x for x in no_data if x not in errors])
+        ', '.join(no_data)
     ))
-
-try:
-    if len(formats) != len(headers) or len(headers) != len(data[0]):
-        error('The "formats" list, "headers" list, and rows in the data are'
-              ' not all the same length!')
-except IndexError as e:
-    raise IndexError from e
-
-for row in data:
-    for i, cell in enumerate(row):
-        if '_f' in formats[i]:
-            row[i] = str(row[i])
-        elif 'percent' in formats[i]:
-            row[i] = float(row[i].replace('%', ''))
-        else:
-            try:
-                row[i] = eval('{0}(row[i])'.format(formats[i].replace('_f',
-                                                                      '')))
-            except ValueError:
-                if '-' in row[i]:
-                    row[i] = str(row[i])
 
 data_sector = {r[2]: [] for r in data}
 for r in data:
     data_sector[r[2]].append(r)
 
 
-# Output Data
+# \_      \_  \_\_\_\_    \_\_\_\_\_  \_\_\_\_\_  \_\_\_\_\_
+#  \_      \_  \_      \_      \_          \_      \_
+#   \_  \_  \_  \_\_\_\_        \_          \_      \_\_\_\_\_
+#    \_\_  \_\_  \_    \_        \_          \_      \_
+#     \_      \_  \_      \_  \_\_\_\_\_      \_      \_\_\_\_\_
 
 write_start = time.time()
 
+print('Writing data...', end=' ')
+workbook = openpyxl.Workbook(guess_types=True)
+master_sheet = workbook.active
+master_sheet.title = 'Master'
+sheet_names = sorted([sheet for sheet in data_sector])  # Alphabetical
+for name in sheet_names:
+    temp_sheet = workbook.create_sheet()
+    temp_sheet.title = name
 
-sheets = {s: excel.add_worksheet(s) for s in data_sector}
-def_r_offset, def_c_offset = 5, 1  # Defaults
-
-pt = excel.add_format({'num_format': '#,##0.00\%'})  # percent
-ft = excel.add_format({'num_format': '#,##0.00'})  # float
-it = excel.add_format({'num_format': '#,##0'})  # int
-sr = excel.add_format({})  # str
-fa = excel.add_format({})  # formula
-
-print('Writing data...', end='')
+for sheet in workbook:
+    for i, header in enumerate(headers):
+        sheet.cell(row=6, column=2+i).value = header
 
 for sector in data_sector:
-    r_offset, c_offset = def_r_offset, def_c_offset
-    for i, header in enumerate(headers):
-            sheets[sector].write(r_offset, i + c_offset, header)
-
-    r_offset += 1
-
     for r, row in enumerate(data_sector[sector]):
         for c, cell in enumerate(row):
-            if '_f' in formats[c]:
-                sheets[sector].write(
-                    r + r_offset,
-                    c + c_offset,
-                    cell.format(n=str(r + r_offset + 1)),
-                    eval(formats[c][0] + formats[c][-3])
-                )
-            else:
-                sheets[sector].write(
-                    r + r_offset,
-                    c + c_offset,
-                    cell,
-                    eval(formats[c][0] + formats[c][-1])
-                )
+            try:
+                workbook.get_sheet_by_name(sector).cell(
+                    row=7+r,
+                    column=2+c
+                ).value = cell.format(n=7+r)
+            except AttributeError:
+                workbook.get_sheet_by_name(sector).cell(
+                    row=7+r,
+                    column=2+c
+                ).value = cell
 
-excel_close(excel)
+r = 0  # Write all the data, so it can't restart counting every time
+for sector in data_sector:
+    for row in data_sector[sector]:
+        for c, cell in enumerate(row):
+            try:
+                master_sheet.cell(row=7+r,
+                                  column=2+c).value = cell.format(n=7+r)
+            except AttributeError:
+                master_sheet.cell(
+                    row=7+r,
+                    column=2+c
+                ).value = cell
+        r += 1
+
+
+workbook.save('test_openpyxl.xlsx')
+
 
 # Finish Up
 
 end = time.time()
-print(' Completed in {0:.2f} seconds'.format(end - write_start))
+print('Completed in {0:.2f} seconds'.format(end - write_start))
 print('Script completed in {0:.2f} seconds'.format(end - start))
 
 notify(
     'Your script has just been run on {0}, taking a total of {1} seconds to'
     ' download and write {2} stocks and {3} dates.'.format(
         socket.gethostname(),
-        end - start,
+        round(end - start, 2),
         len(signs),
         len(dates)
     )
@@ -471,12 +423,12 @@ ifttt('script_logged', v1='{0} ||| {1} ||| {2} ||| {3}'.format(
     end - start
 ))
 
-if 'y' in input('Would you like to open the file in Excel? (y/n) ').lower():
-    try:
-        os.startfile(opath)
-    except OSError:
-        print('Unable to open Excel. The file is called {0}.'.format(
-            path.split('/')[-1])
-        )
+# if 'y' in input('Would you like to open the file in Excel? (y/n) ').lower():
+#     try:
+#         os.startfile(opath_xlsx)
+#     except OSError:
+#         print('Unable to open Excel. The file is called {0}.'.format(
+#             path.split('/')[-1])
+#         )
 
 end_script(terminate=False)
