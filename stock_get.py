@@ -18,7 +18,6 @@ from os.path import expanduser
 
 import openpyxl
 import requests
-import xlsxwriter
 from lxml import html
 
 
@@ -178,18 +177,13 @@ dt = datetime.fromtimestamp(time.time())
 date = dt.strftime('%d-%m-%Y')
 
 if not isdev:
-    opath_xlsx = (
+    output_path = (
         'C:/Users/Gary/Documents/Option_tables/Option_Model_Files/'
         'OptionReportDirectory/options_report_{0}_xlsx.xlsx'.format(date)
     )
 else:
-    opath_xlsx = 'options_report_{0}_xlsx.xlsx'.format(date)
+    output_path = 'options_report_{0}_xlsx.xlsx'.format(date)
 
-try:
-    excel_xlsx = xlsxwriter.Workbook(opath_xlsx)
-except:
-    error('Unable to open workbook. Please close it if it is open and try '
-          'again.')
 
 start = time.time()
 
@@ -278,13 +272,6 @@ except ZeroDivisionError:
 
 # Format Data
 
-formats = [
-    'str', 'str', 'str', 'str', 'float',
-    'str', 'str_f', 'str', 'float', 'float',
-    'float', 'int', 'int', 'float', 'float_f',
-    'int_f', 'int_f', 'int_f', 'float_f', 'percent_f',
-    'percent_f', 'float_f', 'percent_f', 'percent_f', 'str_f'
-]
 headers = [
     'co_symbol', 'company', 'sector', 'industry', 'Last', 'Option', 'exp_date',
     'Call', 'Strike', 'Bid', 'Ask', 'Open interest', 'Vol', 'Last',
@@ -397,7 +384,7 @@ for sector in data_sector:
         r += 1
 
 
-workbook.save('test_openpyxl.xlsx')
+workbook.save(output_path)
 
 
 # Finish Up
@@ -425,7 +412,7 @@ ifttt('script_logged', v1='{0} ||| {1} ||| {2} ||| {3}'.format(
 
 # if 'y' in input('Would you like to open the file in Excel? (y/n) ').lower():
 #     try:
-#         os.startfile(opath_xlsx)
+#         os.startfile(output_path)
 #     except OSError:
 #         print('Unable to open Excel. The file is called {0}.'.format(
 #             path.split('/')[-1])
