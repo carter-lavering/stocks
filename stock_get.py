@@ -1,4 +1,12 @@
-# To-Do
+#!/usr/bin/env python
+# coding=utf-8
+
+# \_\_\_\_\_    \_\_\_                \_\_\_\_      \_\_\_
+#     \_      \_      \_              \_      \_  \_      \_
+#      \_      \_      \_  \_\_\_\_\_  \_      \_  \_      \_
+#       \_      \_      \_              \_      \_  \_      \_
+#        \_        \_\_\_                \_\_\_\_      \_\_\_
+
 # [X] Separate sheets for sectors
 # [X] Add easier way to input dates
 # [X] Add separate files for dates and signs
