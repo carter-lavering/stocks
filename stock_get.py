@@ -146,7 +146,8 @@ def rearrange(lst, order):
     Indexing starts at 0."""
     return [lst[x] for x in order]
 
-
+version = 1.0
+print('Stock data downloader version {0}'.format(version))
 isdev = socket.gethostname() == 'c-laptop'
 if isdev:
     print('Developer mode active')
