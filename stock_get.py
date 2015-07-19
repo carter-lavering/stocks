@@ -305,11 +305,11 @@ for sign in all_data:
         for r in all_data[sign][date][:]:
             # human-readable date = hrd
             hrd_lst = [r[2][-15:-9][x:x + 2] for x in range(0, 6, 2)]
-            print(r[2], end=' ')
             # Don't delete the extra parentheses, .join() only takes one
-            # argument         \/                                        \/
+            # argument
             hrd_str = '/'.join((hrd_lst[1], hrd_lst[2], '20' + hrd_lst[0]))
-            print(hrd_str)
+            if hrd_str[0] == '0':  # No zeros at the beginning
+                hrd_str = hrd_str[1:]
             row = ([sign] +
                    all_data[sign]['Info'][0:3] +
                    rearrange(r, [0, 2]) +
