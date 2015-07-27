@@ -9,7 +9,7 @@
 
 # [X] Separate sheets for sectors
 # [X] Add easier way to input dates
-# [X] Add separate files for dates and signs
+# [X] Add separate files for dates and symbols
 # [ ] Automated date validity check
 
 # \_\_\_\_\_  \_      \_  \_\_\_\_      \_\_\_    \_\_\_\_    \_\_\_\_\_
@@ -146,7 +146,7 @@ def rearrange(lst, order):
     Indexing starts at 0."""
     return [lst[x] for x in order]
 
-version = 1.0
+version = '1.0.1'
 print('Stock data downloader version {0}'.format(version))
 isdev = socket.gethostname() == 'c-laptop'
 if isdev:
@@ -188,10 +188,10 @@ date = dt.strftime('%d-%m-%Y')
 if not isdev:
     output_path = (
         'C:/Users/Gary/Documents/Option_tables/Option_Model_Files/'
-        'OptionReportDirectory/options_report_{0}_xlsx.xlsx'.format(date)
+        'OptionReportDirectory/options_report_{0}.xlsx'.format(date)
     )
 else:
-    output_path = 'options_report_{0}_xlsx.xlsx'.format(date)
+    output_path = 'options_report_{0}.xlsx'.format(date)
 
 
 start = time.time()
@@ -286,17 +286,24 @@ except ZeroDivisionError:
 #     \_            \_\_\_    \_      \_  \_      \_  \_      \_      \_
 
 headers = [
-    'co_symbol', 'company', 'sector', 'industry', 'Last', 'Option', 'exp_date',
-    'Call', 'Strike', 'Bid', 'Ask', 'Open interest', 'Vol', 'Last',
+    'co_symbol', 'company', 'sector', 'industry', 'Last', 'exp_date',
+    'Strike', 'Bid', 'Ask', 'Vol', 'Last',
     datetime.now().strftime('%m/%d/%y'), 'days', '60000', ' $invested',
     '$prem', ' prem%', 'annPrem%', ' MaxRet', ' Max%', 'annMax%', '10%'
 ]
+
 formulas = [
-    '=IF(J{n}<F{n},(J{n}-F{n})+K{n},K{n})', '=H{n}-P$6',
-    '=ROUND(R$6/((F{n}-0)*100),0)', '=100*R{n}*(F{n}-0)', '=100*P{n}*R{n}',
-    '=(T{n}/S{n})*100', '=(365/Q{n})*U{n}',
-    '=IF(J{n}>F{n},(100*R{n}*(J{n}-F{n}))+T{n},T{n})', '=(W{n}/S{n})*100',
-    '=((365/Q{n})*X{n})*100', '=IF((ABS(J{n}-F{n})/J{n})<Z$6,"NTM","")'
+    '=IF(H{n}<F{n},(H{n}-F{n})+I{n},I{n})',
+    '=G{n}-M$6',
+    '=ROUND(O$6/((F{n}-0)*100),0)',
+    '=100*O{n}*(F{n}-0)',
+    '=100*M{n}*O{n}',
+    '=(Q{n}/P{n})*100',
+    '=(365/N{n})*R{n}',
+    '=100*M{n}*O{n}',
+    '=(T{n}/P{n})*100',
+    '=((365/N{n})*U{n})*100',
+    '=IF((ABS(H{n}-F{n})/H{n})<W$6,"NTM","")'
 ]
 
 data = []
@@ -312,10 +319,10 @@ for sign in all_data:
             if hrd_str[0] == '0':  # No zeros at the beginning
                 hrd_str = hrd_str[1:]
             row = ([sign] +
-                   all_data[sign]['Info'][0:3] +
-                   rearrange(r, [0, 2]) +
-                   [hrd_str, 'C'] +
-                   rearrange(r, [1, 4, 5, 9, 8, 3]) +
+                   all_data[sign]['Info'][:3] +
+                   [r[0]] +
+                   [hrd_str] +
+                   rearrange(r, [1, 4, 5, 8, 3]) +
                    formulas)
             data.append(row)
 
@@ -331,7 +338,10 @@ for sign in signs:
 # Make sure it actually has things in it
 assert data
 # Make sure everything's the same length
-assert len(headers) == len(data[0])
+try:
+    assert len(headers) == len(data[0])
+except AssertionError as e:
+    raise AssertionError(e.args, len(headers), len(data[0]))
 
 no_data = [sign for sign in in_data if not in_data[sign] if sign not in errors]
 if errors != []:
