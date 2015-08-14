@@ -200,6 +200,8 @@ if not isdev:
 else:
     output_path = 'options_report_{0}.xlsx'.format(date)
 
+test_save_location = openpyxl.Workbook()
+test_save_location.save(output_path)
 
 start = time.time()
 
@@ -294,7 +296,7 @@ except ZeroDivisionError:
 
 headers = ['co_symbol', 'company', 'sector', 'industry', 'Last', 'exp_date',
            'Strike', 'Bid', 'Ask', 'Vol', 'Last',
-           datetime.now().strftime('%m/%d/%y'), 'days', '60000', ' $invested',
+           datetime.now().date(), 'days', '60000', ' $invested',
            '$prem', ' prem%', 'annPrem%', ' MaxRet', ' Max%', 'annMax%', '10%']
 
 formulas = [
@@ -317,16 +319,18 @@ for sign in all_data:
     for date in [date for date in all_data[sign] if date != 'Info']:
         for r in all_data[sign][date][:]:
             # human-readable date = hrd
+            # computer-readable date = crd
             hrd_lst = [r[2][-15:-9][x:x + 2] for x in range(0, 6, 2)]
             # Don't delete the extra parentheses, .join() only takes one
             # argument
             hrd_str = '/'.join((hrd_lst[1], hrd_lst[2], '20' + hrd_lst[0]))
+            crd = datetime.strptime(hrd_str, '%m/%d/%Y').date()
             if hrd_str[0] == '0':  # No zeros at the beginning
                 hrd_str = hrd_str[1:]
             row = ([sign] +
                    all_data[sign]['Info'][:3] +
                    [r[0]] +
-                   [hrd_str] +
+                   [crd] +
                    rearrange(r, [1, 4, 5, 8, 3]) +
                    formulas)
             data.append(row)
@@ -336,9 +340,12 @@ for sign in signs:
     in_data[sign] = False
     for row in data:
         for cell in row:
-            if sign in cell:
-                in_data[sign] = True
+            try:
+                if sign in cell:
+                    in_data[sign] = True
                 break
+            except TypeError:
+                pass
 
 # Make sure it actually has things in it
 assert data
