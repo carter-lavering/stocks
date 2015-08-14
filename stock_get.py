@@ -146,6 +146,13 @@ def rearrange(lst, order):
     Indexing starts at 0."""
     return [lst[x] for x in order]
 
+
+# \_\_\_\_\_  \_\_\_\_\_  \_\_\_\_\_  \_\_\_\_    \_\_\_\_\_
+#  \_              \_      \_      \_  \_      \_      \_
+#   \_\_\_\_\_      \_      \_\_\_\_\_  \_\_\_\_        \_
+#            \_      \_      \_      \_  \_    \_        \_
+#     \_\_\_\_\_      \_      \_      \_  \_      \_      \_
+
 version = '1.0.1'
 print('Stock data downloader version {0}'.format(version))
 isdev = socket.gethostname() == 'c-laptop'
@@ -285,12 +292,10 @@ except ZeroDivisionError:
 #    \_          \_      \_  \_    \_    \_      \_  \_      \_      \_
 #     \_            \_\_\_    \_      \_  \_      \_  \_      \_      \_
 
-headers = [
-    'co_symbol', 'company', 'sector', 'industry', 'Last', 'exp_date',
-    'Strike', 'Bid', 'Ask', 'Vol', 'Last',
-    datetime.now().strftime('%m/%d/%y'), 'days', '60000', ' $invested',
-    '$prem', ' prem%', 'annPrem%', ' MaxRet', ' Max%', 'annMax%', '10%'
-]
+headers = ['co_symbol', 'company', 'sector', 'industry', 'Last', 'exp_date',
+           'Strike', 'Bid', 'Ask', 'Vol', 'Last',
+           datetime.now().strftime('%m/%d/%y'), 'days', '60000', ' $invested',
+           '$prem', ' prem%', 'annPrem%', ' MaxRet', ' Max%', 'annMax%', '10%']
 
 formulas = [
     '=IF(H{n}<F{n},(H{n}-F{n})+I{n},I{n})',
