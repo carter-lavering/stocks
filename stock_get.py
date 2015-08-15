@@ -153,7 +153,7 @@ def rearrange(lst, order):
 #            \_      \_      \_      \_  \_    \_        \_
 #     \_\_\_\_\_      \_      \_      \_  \_      \_      \_
 
-version = '1.0.1'
+version = '1.0.2'
 print('Stock data downloader version {0}'.format(version))
 isdev = socket.gethostname() == 'c-laptop'
 if isdev:
