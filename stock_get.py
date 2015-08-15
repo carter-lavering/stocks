@@ -94,7 +94,10 @@ def read_sheet_column(workbook_path, sheet_name=None, headers=True):
         else:
             adjacent_cell = ws.cell(row=y-1, column=x)
             if '#' not in str(adjacent_cell.value):
-                output_cells.append(read_cell.value)
+                try:
+                    output_cells.append(read_cell.value.upper())
+                except AttributeError:
+                    output_cells.append(read_cell.value)
         if output_cells[-1] is None:
             del output_cells[-1]
         y += 1
@@ -153,7 +156,7 @@ def rearrange(lst, order):
 #            \_      \_      \_      \_  \_    \_        \_
 #     \_\_\_\_\_      \_      \_      \_  \_      \_      \_
 
-version = '1.0.3'
+version = '1.0.4'
 print('Stock data downloader version {0}'.format(version))
 isdev = socket.gethostname() == 'c-laptop'
 if isdev:
