@@ -153,7 +153,7 @@ def rearrange(lst, order):
 #            \_      \_      \_      \_  \_    \_        \_
 #     \_\_\_\_\_      \_      \_      \_  \_      \_      \_
 
-version = '1.0.2'
+version = '1.0.3'
 print('Stock data downloader version {0}'.format(version))
 isdev = socket.gethostname() == 'c-laptop'
 if isdev:
@@ -201,7 +201,12 @@ else:
     output_path = 'options_report_{0}.xlsx'.format(date)
 
 test_save_location = openpyxl.Workbook()
-test_save_location.save(output_path)
+try:
+    test_save_location.save(output_path)
+except PermissionError:
+    print('You have the file open! Please close the Excel window called',
+          output_path.split('/')[-1])
+    input('Press enter to exit')
 
 start = time.time()
 
