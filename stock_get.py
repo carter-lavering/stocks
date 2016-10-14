@@ -10,7 +10,11 @@
 # [X] Separate sheets for sectors
 # [X] Add easier way to input dates
 # [X] Add separate files for dates and symbols
-# [ ] Automated date validity check
+# [X] Figure out what to do about timestamps
+# [X] Do said thing
+# [X] Add weekday statistics at end
+# [X] Check user dates against valid dates
+# [ ] More feedback about dates (dots when date not found?)
 
 # \_\_\_\_\_  \_      \_  \_\_\_\_      \_\_\_    \_\_\_\_    \_\_\_\_\_
 #      \_      \_\_  \_\_  \_      \_  \_      \_  \_      \_      \_
@@ -110,7 +114,7 @@ def week(timestamp):
     """Returns the ISO calendar week number of a given timestamp.
 
     Timestamp can be either an integer or a string."""
-    return datetime.fromtimestamp(int(timestamp)).isocalendar()[1]
+    return datetime.utcfromtimestamp(int(timestamp)).isocalendar()[1]
 
 
 def notify(message):
@@ -176,7 +180,7 @@ if isdev:
     print('Developer mode active')
 else:
     print('User mode active')
-    print(expanduser('~') + '\\Desktop\\stock_signs.txt')
+
 desktop = expanduser('~') + '\\Desktop\\'
 
 print('Opening files...')
@@ -191,7 +195,9 @@ except FileNotFoundError:
     end_script(terminate=False)
 try:
     dates = read_sheet_column(desktop + 'stock_dates.xlsx')
-    dates_weeks = [date.isocalendar()[1] for date in dates]
+    print(dates)
+    dates_weeks = [date.isocalendar()[:1] for date in dates]
+    print(dates_weeks)
 except FileNotFoundError:
     write_dates = openpyxl.Workbook()
     write_dates.save(desktop + 'stock_dates.xlsx')
@@ -199,6 +205,244 @@ except FileNotFoundError:
           ' stock_dates.xlsx. Put hash marks in the cells to the left of the'
           " ones you don't want.")
     end_script(terminate=False)
+
+backup_signs = [
+    'A',
+    'ABC',
+    'ABT',
+    'ACE',  # Renamed "ACET"
+    'ACN',
+    'ACT',  # Renamed "ATVI"
+    'ADBE',
+    'ADI',
+    'AET',
+    'AFL',
+    'AGN',
+    'AGU',
+    'AIG',
+    'ALL',
+    'ALXN',
+    'AMGN',
+    'AMT',
+    'AMZN',
+    'APA',
+    'APC',
+    'APD',
+    'AXP',
+    'AZO',
+    'BA',
+    'BAC',
+    'BAM',
+    'BAX',
+    'BBBY',
+    'BDX',
+    'BEN',
+    'BFB',  # No industry/sector data
+    'BHI',
+    'BHP',
+    'BIIB',
+    'BMY',
+    'BP',
+    'BRK-B',
+    'BUD',
+    'BWA',
+    'BXP',  # Idk
+    'C',
+    'CAH',
+    'CAM',  # Renamed "CWH"
+    'CAT',
+    'CBS',
+    'CELG',
+    'CERN',
+    'CHKP',
+    'CI',
+    'CMCSA',
+    'CME',
+    'CMG',
+    'CMI',
+    'CNQ',
+    'COF',
+    'COG',
+    'COH',
+    'COST',
+    'COV',
+    'CS',
+    'CSCO',
+    'CSX',
+    'CTSH',
+    'CTXS',
+    'CVS',
+    'CVX',
+    'DAL',
+    'DD',
+    'DEO',
+    'DFS',
+    'DGX',
+    'DHR',
+    'DIS',
+    'DLPH',
+    'DOV',
+    'DTV',  # No industry/sector data, no options data (valid stock tho)
+    'DVA',
+    'DVN',
+    'EBAY',
+    'ECL',
+    'EL',
+    'EMC',  # No industry/sector data
+    'EMN',
+    'ENB',
+    'EOG',
+    'EPD',
+    'ESRX',
+    'ESV',
+    'ETN',
+    'F',
+    'FB',
+    'FDX',
+    'FIS',
+    'FLR',
+    'GD',
+    'GE',
+    'GILD',
+    'GIS',
+    'GLW',
+    'GM',
+    'GPS',
+    'GSK',
+    'GWW',
+    'HAL',
+    'HD',
+    'HES',
+    'HMC',
+    'HOG',
+    'HON',
+    'HOT',  # No industry/sector data
+    'HST',
+    'HSY',
+    'HUM',
+    'ICE',
+    'INTC',
+    'IP',
+    'ISRG',
+    'JCI',
+    'JNJ',
+    'JPM',
+    'KMP',  # Renamed ^KMP
+    'KMX',
+    'KO',
+    'KR',
+    'KRFT',  # No data...?
+    'KSS',
+    'L',
+    'LLY',
+    'LOW',
+    'LVS',
+    'LYB',
+    'M',
+    'MA',
+    'MAR',
+    'MAT',
+    'MCD',
+    'MCK',
+    'MDLZ',
+    'MDT',
+    'MET',
+    'MFC',
+    'MHFI',  # Doesn't exist as a whole, "MHFInnn..." options do tho
+    'MMC',
+    'MO',
+    'MON',
+    'MOS',
+    'MPC',
+    'MRK',
+    'MRO',
+    'MRO',
+    'MS',
+    'MSFT',
+    'MUR',
+    'MYL',
+    'NBL',
+    'NE',
+    'NEM',
+    'NKE',
+    'NLSN',
+    'NOV',
+    'NSC',
+    'NUE',
+    'NVS',  # Weirdness with one date
+    'ORCL',
+    'ORLY',
+    'OXY',
+    'PCP',  # Renamed "^PCP"
+    'PEP',
+    'PFE',
+    'PG',
+    'PH',
+    'PM',
+    'PNC',
+    'PNR',
+    'PPG',
+    'PRU',
+    'PSX',
+    'PX',
+    'PXD',
+    'QCOM',
+    'QQQ',  # No industry/sector data
+    'REGN',
+    'RIO',
+    'RL',
+    'ROP',
+    'ROST',
+    'RRC',
+    'RSG',
+    'SBUX',
+    'SE',
+    'SHW',
+    'SJM',
+    'SLB',
+    'SLM',
+    'SNDK',  # Exists only in options form
+    'SPG',
+    'STT',
+    'STZ',
+    'SU',
+    'SWK',
+    'SYK',
+    'TCK',
+    'TEL',
+    'TJX',
+    'TM',
+    'TMO',
+    'TROW',
+    'TRV',
+    'TWC',  # ^TWC
+    'TWX',
+    'TYC',  # No industry/sector data
+    'UAL',
+    'UNH',
+    'UNP',
+    'UPS',
+    'UTX',
+    'V',
+    'VFC',
+    'VIAB',
+    'VLO',
+    'VNO',
+    'VZ',
+    'WAG',  # ^WAG
+    'WDC',
+    'WFC',
+    'WFM',
+    'WMB',
+    'WMT',
+    'WY',
+    'WYNN',
+    'YHOO',
+    'YUM',
+    'ZMH'  # ^ZMH
+]
+
+signs = backup_signs  # Until I can get a list of better ones from Grandpa
 
 assert signs
 assert dates
@@ -208,21 +452,17 @@ print('{0} signs, {1} dates'.format(len(signs), len(dates)))
 dt = datetime.fromtimestamp(time.time())
 date = dt.strftime('%d-%m-%Y')
 
+print(date)
+
 if not isdev:
     output_path = (
         'C:/Users/Gary/Documents/Option_tables/Option_Model_Files/'
-        'OptionReportDirectory/options_report_{0}.xlsx'.format(date)
+        'OptionReportDirectory/options_report_{0}.csv'.format(date)
     )
 else:
-    output_path = 'options_report_{0}.xlsx'.format(date)
+    output_path = 'options_report_{0}.csv'.format(date)
 
-test_save_location = openpyxl.Workbook()
-try:
-    test_save_location.save(output_path)
-except PermissionError:
-    print('You have the file open! Please close the Excel window called',
-          output_path.split('/')[-1])
-    input('Press enter to exit')
+output_name = output_path.split('/')[-1]
 
 start = time.time()
 
@@ -238,31 +478,21 @@ start = time.time()
 #          \_          \_      \_  \_      \_  \_      \_
 #           \_\_\_\_\_    \_\_\_    \_      \_  \_\_\_\_
 
-# site = 'https://finance.yahoo.com/q/op?s={0}&date={1}'  # .format(sign, date)
-# first_site = 'https://finance.yahoo.com/q/op?s={0}'  # .format(sign)
-# left_col = "//div[@id='optionsCallsTable']//tbody/tr"
-# path_table = "//div[@id='optionsCallsTable']//tbody/tr[{0}]/td/*//text()"
-# path_last = "//*[@id='yfs_l84_{0}']//text()"  # .format(sign)
-# path_dates = '//div[@class=\'Fl(start)\']'
+options_data_url = 'https://query1.finance.yahoo.com/v7/finance/options/{0}'
+stock_data_url = ('https://query1.finance.yahoo.com/v10/finance/quoteSummary/'
+                  '{0}?modules=assetProfile')
 
-
-# site_2 = 'https://finance.yahoo.com/q/in?s={0}+Industry'  # .format(sign)
-# paths_info = ['//*[@id="yfi_rt_quote_summary"]/div[1]/div/h2/text()',
-#               '//tr[1]/td/a/text()',
-#               '//tr[2]/td/a/text()']
-
-data_url = 'https://query1.finance.yahoo.com/v7/finance/options/{0}'
-
-all_data = [[
+all_data = [[  # Headers
     'Stock', 'Timestamp', 'Contract Symbol', 'Strike', 'Currency',
     'Last Price', 'Change', '% Change', 'Volume', 'Open Interest', 'Bid',
     'Ask', 'Contract Size', 'Expiration', 'Last Trade Date',
-    'Implied Volatility', 'In The Money', 'Stock Last']]  # Headers
+    'Implied Volatility', 'In The Money', 'Stock Last', 'Industry', 'Sector',
+    'Company']]
 json_headers = [
-    'contractSymbol', 'strike', 'currency', 'lastPrice', 'change',
-    'percentChange', 'volume', 'openInterest', 'bid', 'ask', 'contractSize',
-    'expiration', 'lastTradeDate', 'impliedVolatility', 'inTheMoney',
-    'quoteLast']
+    'contractSymbol', 'strike', 'currency', 'lastPrice',
+    'change', 'percentChange', 'volume', 'openInterest', 'bid', 'ask',
+    'contractSize', 'expiration', 'lastTradeDate', 'impliedVolatility',
+    'inTheMoney', 'quoteLast', 'industry', 'sector', 'company']
 errors = []
 
 for sign in signs:
@@ -271,93 +501,86 @@ for sign in signs:
                                               len(max(signs, key=len)),
                                               signs.index(sign) + 1,
                                               len(str(len(signs))),
-                                              len(signs)), end='')
+                                              len(signs)),
+          end='')
 
-    dates_page = requests.get(data_url.format(sign))
+    dates_page = requests.get(options_data_url.format(sign))
     dates_json = json.loads(dates_page.text)
-    timestamps_from_site = (
-        dates_json['optionChain']['result'][0]['expirationDates']
-    )
+    try:
+        timestamps_from_site = (
+            dates_json['optionChain']['result'][0]['expirationDates']
+        )
+    except (IndexError, TypeError) as e:
+        print(' Non-existent', end='')
+        continue
+
     # timestamps_to_use = timestamps_from_site
-    timestamps_to_use = [timestamps_from_site[0]]
+    timestamps_to_use = [ts for ts in timestamps_from_site if datetime.fromtimestamp(ts).isocalendar()[:1] in dates_weeks]
+    print(' [', '-' * len(timestamps_to_use), ']', sep='', end='', flush=True)
+
+    weekdays = []
+
+    stock_page = requests.get(stock_data_url.format(sign))
+    stock_json = json.loads(stock_page.text)
+
+    profile = stock_json['quoteSummary']['result'][0]['assetProfile']
+    try:
+        industry, sector = profile['industry'], profile['sector']
+    except KeyError:
+        print(' Sector and industry unavailable', '\b' * 32,
+              sep='', end='', flush=True)
+        industry = sector = ''
+
+    print('\b' * (len(timestamps_to_use) + 1), end='')
+
+    messages = []
     for ts in timestamps_to_use:
-        print('.', end='', flush=True)
-        data_page = requests.get(data_url.format(sign) + '?date=' + str(ts))
+        complete_success = True
+        try:
+            data_page = requests.get(
+                options_data_url.format(sign) + '?date=' + str(ts)
+            )
+        except TimeoutError:  # Redundancy just to be sure
+            try:
+                data_page = requests.get(
+                    options_data_url.format(sign) + '?date=' + str(ts)
+                )
+            except TimeoutError:
+                # TODO: More verbose
+                print('-', end='', flush=True)
+                messages.append('{d} timed out'.format(
+                    d=datetime.utcfromtimestamp(ts).strftime('%m/%d/%Y')
+                ))
+                continue
         data_json = json.loads(data_page.text)
         specific_data = data_json['optionChain']['result'][0]
         # {'Stock Last': specific_data['quote']['regularMarketPrice']}
         data_dict = (specific_data['options'][0]['calls'])  # List of dicts
-        # TODO: Add stock last to data_dict
-        print(specific_data['quote']['regularMarketPrice'])
         for row in data_dict:
             row.update(
-                {'quoteLast': specific_data['quote']['regularMarketPrice']}
+                {'quoteLast': specific_data['quote']['regularMarketPrice'],
+                 'company': specific_data['quote']['longName'],
+                 'industry': industry,
+                 'sector': sector}
             )
-            all_data.append([sign, start] + [row[key] for key in json_headers])
-        # break  # For testing, don't need every single date so just do it once
-    # page = requests.get(site_2.format(sign))
-    # tree = html.fromstring(page.text)
-    # try:
-    #     all_data[sign]['Info'] = [tree.xpath(paths_info[0])[0]]
-    # except IndexError:
-    #     print(' Error: stock does not exist.', end='')
-    #     errors.append(sign)
-    #     continue
-    # all_data[sign]['Info'] = ['Filler']
-
-    # try:
-    #     all_data[sign]['Info'].extend(
-    #         [tree.xpath(path)[0] for path in paths_info[1:]]
-    #     )
-    # except IndexError:
-    #     all_data[sign]['Info'].extend(['EFT', 'EFT'])
-
-    # page = requests.get(first_site.format(sign))
-    # tree = html.fromstring(page.text)
-    # dates_from_site = tree.xpath(path_dates)
-    # print('\nDates from sites:', dates_from_site)
-    # print('Date weeks:', dates_weeks)
-    # valid_dates = [x for x in dates_from_site if week(x) in dates_weeks]
-    # if not valid_dates:
-    #     print(' Error: No valid dates.', end='')
-    #     continue
-    # for date in valid_dates:
-    #     all_data[sign][date] = []
-    #     print('.', end='', flush=True)
-    #     page = requests.get(site.format(sign, date))
-    #     tree = html.fromstring(page.text)
-    #     left_data = tree.xpath(left_col)  # So we know how many rows exist
-    #     exists = True
-    #     for row_n in range(len(left_data)):
-    #         temp_row = tree.xpath(path_table.format(row_n + 1))
-    #         try:
-    #             temp_row.insert(0, tree.xpath(path_last.format(sign))[0])
-    #         except IndexError as e:
-    #             exists = False
-    #         if exists:
-    #             all_data[sign][date].append(temp_row)
-    #     if not exists:
-    #         print(' Stock does not exist.', end='')
-    #         break
+            try:
+                all_data.append([sign, start] + [row[key]
+                                for key in json_headers])
+            except KeyError:
+                # TODO: More verbose
+                complete_success = False
+                messages.append('Something went wrong with {d} ({ts})'.format(
+                    d=datetime.utcfromtimestamp(ts).strftime('%m/%d/%Y'),
+                    ts=ts
+                ))
+                print('-', end='', flush=True)
+                continue
+        if complete_success:
+            print('=', end='', flush=True)
+    if messages:
+        print('] ', ', '.join(messages), end='', flush=True)
 
 print()  # Allow printing of the last line
-
-print(all_data)
-
-# download_end = time.time()
-# try:
-#     print(
-#         'Download completed in {0:.2f} seconds (average {1:.2f} seconds per'
-#         ' stock)'.format(
-#             download_end - start,
-#             (download_end - start) / len(signs)
-#         )
-#     )
-# except ZeroDivisionError:
-#     error(
-#         'No stock signs found. Please enter them into stock_signs.txt on'
-#         ' your desktop and try again.'
-#     )
 
 # \_\_\_\_\_    \_\_\_    \_\_\_\_    \_      \_  \_\_\_\_\_  \_\_\_\_\_
 #  \_          \_      \_  \_      \_  \_\_  \_\_  \_      \_      \_
@@ -366,10 +589,28 @@ print(all_data)
 #     \_            \_\_\_    \_      \_  \_      \_  \_      \_      \_
 
 headers = [
-    'co_symbol', 'company', 'sector', 'industry', 'Last', 'contract',
-    'exp_date', '', 'Strike', 'Bid', 'Ask', 'Open Interest', 'Vol', 'Last',
-    datetime.now().date(), 'days', '60000', ' $invested', '$prem', ' prem%',
-    'annPrem%', ' MaxRet', ' Max%', 'annMax%', '10%'
+    'Symbol',
+    'Company',
+    'Industry',
+    'Sector',
+    'Price',
+    'Expiration',
+    'Strike',
+    'Bid',
+    'Ask',
+    'Volume',
+    'Last Call',
+    datetime.now().date(),
+    'days',
+    '70,000',
+    ' $invested',
+    '$prem',
+    'prem%',
+    'annPrem%',
+    'MaxRet',
+    'Max%',
+    'annMax%',
+    '10%'
 ]
 
 all_data_by_header = [
@@ -378,15 +619,13 @@ all_data_by_header = [
 
 for d in all_data_by_header:
     d['Timestamp'] = (
-        datetime.fromtimestamp(d['Timestamp']).strftime('%m/%d/%Y %H:%M'))
+        datetime.utcfromtimestamp(d['Timestamp']).strftime('%m/%d/%Y %H:%M'))
 
     d['Last Trade Date'] = (
-        datetime.fromtimestamp(d['Last Trade Date']).strftime('%m/%d/%Y'))
+        datetime.utcfromtimestamp(d['Last Trade Date']).strftime('%m/%d/%Y'))
 
     d['Expiration'] = (
-        datetime.fromtimestamp(d['Expiration']).strftime('%m/%d/%Y'))
-
-    print(d)
+        datetime.utcfromtimestamp(d['Expiration']).strftime('%m/%d/%Y'))
 
 # Original formulas
 # formulas = [
@@ -404,89 +643,34 @@ for d in all_data_by_header:
 # ]
 
 formulas = [
-    '',
-    '=H{n}-M$6',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    ''
+    '=IF(K{n}<I{n},(K{n}-I{n})+O{n},O{n})',
+    '=J{n}-P$6',
+    '=ROUND(R$6/((I{n}-0)*100),0)',
+    '=100*R{n}*(I{n}-0)',
+    '=100*P{n}*R{n}',
+    '=T{n}/S{n}',
+    '=(365/Q{n})*U{n}',
+    '=IF(K{n}>I{n},(100*R{n}*(K{n}-I{n}))+T{n},T{n})',
+    '=W{n}/S{n}',
+    '=(365/Q{n})*X{n}',
+    '=IF((ABS(K{n}-I{n})/K{n})<Z$6,"NTM","")'
 ]
 
 v_offset = 5
+h_offset = 4
 
 formatted_data_table = [headers] + [
     mass_lookup(row, [
-        'Stock', 'Company', 'Industry', 'Sector', 'Stock Last',
-        'Contract Symbol', 'Expiration', 'Call/Put', 'Strike', 'Bid', 'Ask',
-        'Open Interest', 'Volume', 'Last Price']) +
+        'Stock', 'Company', 'Industry', 'Sector', 'Stock Last', 'Expiration',
+        'Strike', 'Bid', 'Ask', 'Volume', 'Last Price']) +
     # +2 because Excel starts counting at 1 and because there are headers
     [f.format(n=i+v_offset+2) for f in formulas]
     for i, row in enumerate(all_data_by_header)]
 
 # Offset for formulas to work
-formatted_data_table = [[]] * v_offset + [[''] + row for row in formatted_data_table]
-
-# data = []
-
-# for sign in all_data:
-#     for date in [date for date in all_data[sign] if date != 'Info']:
-# '        for r in all_data[sign][date][:]:
-#             # human-readable date = hrd
-#             # computer-readable date = crd
-#             hrd_lst = [r[2][-15:-9][x:x + 2] for x in range(0', 6, 2)]
-#             # Don't delete the extra parentheses, .join() only takes one
-#             # argument
-#             hrd_str = '/'.join((hrd_lst[1], hrd_lst[2], '20' + hrd_lst[0]))
-#             crd = datetime.strptime(hrd_str, '%m/%d/%Y').date()
-#             if hrd_str[0] == '0':  # No zeros at the beginning
-#                 hrd_str = hrd_str[1:]
-#             row = ([sign] +
-#                    all_data[sign]['Info'][:3] +
-#                    [r[0]] +
-#                    [crd] +
-#                    rearrange(r, [1, 4, 5, 8, 3]) +
-#                    formulas)
-#             data.append(row)
-
-# in_data = {}
-# for sign in signs:
-#     in_data[sign] = False
-#     for row in data:
-#         for cell in row:
-#             try:
-#                 if sign in cell:
-#                     in_data[sign] = True
-#                 break
-#             except TypeError:
-#                 pass
-
-# # Make sure it actually has things in it
-# assert data
-# # Make sure everything's the same length
-# try:
-#     assert len(headers) == len(data[0])
-# except AssertionError as e:
-#     raise AssertionError(e.args, len(headers), len(data[0]))
-
-# no_data=[sign for sign in in_data if not in_data[sign] if sign not in errors]
-# if errors != []:
-#     print('The following stocks failed to download: {0}.'.format(
-#         ', '.join(errors)
-#     ))
-# if [x for x in no_data if x not in errors] != []:
-#     print('The following stocks returned no data: {0}.'.format(
-#         ', '.join(no_data)
-#     ))
-
-# data_sector = {r[2]: [] for r in data}
-# for r in data:
-#     data_sector[r[2]].append(r)
-
+formatted_data_table = (
+    [[]] * v_offset + [[''] * h_offset + row for row in formatted_data_table]
+)
 
 # # \_      \_  \_\_\_\_    \_\_\_\_\_  \_\_\_\_\_  \_\_\_\_\_
 # #  \_      \_  \_      \_      \_          \_      \_
@@ -494,89 +678,20 @@ formatted_data_table = [[]] * v_offset + [[''] + row for row in formatted_data_t
 # #    \_  \_  \_  \_    \_        \_          \_      \_
 # #     \_\_  \_\_  \_      \_  \_\_\_\_\_      \_      \_\_\_\_\_
 
-with open('stockdata.csv', 'w', newline='') as csv_file:
-    csv_writer = csv.writer(csv_file)
-    for row in formatted_data_table:
-        csv_writer.writerow(row)
+print('Writing to {0}...'.format(output_name), end=' ', flush=True)
 
-print('Writing complete')
+try:
+    with open(output_path, 'w', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file)
+        for row in formatted_data_table:
+            csv_writer.writerow(row)
+except PermissionError:
+    print('\a\nPlease close {0}.'.format(output_name))
+    input('Press enter when done')
+    print('Writing to {0}...'.format(output_name, end=' ', flush=True))
+    with open(output_path, 'w', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file)
+        for row in formatted_data_table:
+            csv_writer.writerow(row)
 
-# write_start = time.time()
-
-# print('Writing data...', end=' ')
-# workbook = openpyxl.Workbook(guess_types=True)
-# master_sheet = workbook.active
-# master_sheet.title = 'Master'
-# sheet_names = sorted([sheet for sheet in data_sector])  # Alphabetical
-# for name in sheet_names:
-#     temp_sheet = workbook.create_sheet()
-#     temp_sheet.title = name
-
-# for sheet in workbook:
-#     for i, header in enumerate(headers):
-#         sheet.cell(row=6, column=2+i).value = header
-
-# for sector in data_sector:
-#     for r, row in enumerate(data_sector[sector]):
-#         for c, cell in enumerate(row):
-#             try:
-#                 workbook.get_sheet_by_name(sector).cell(
-#                     row=7+r,
-#                     column=2+c
-#                 ).value = cell.format(n=7+r)
-#             except AttributeError:
-#                 workbook.get_sheet_by_name(sector).cell(
-#                     row=7+r,
-#                     column=2+c
-#                 ).value = cell
-
-# r = 0  # Write all the data, so it can't restart counting every time
-# for sector in data_sector:
-#     for row in data_sector[sector]:
-#         for c, cell in enumerate(row):
-#             try:
-#                 master_sheet.cell(row=7+r,
-#                                   column=2+c).value = cell.format(n=7+r)
-#             except AttributeError:
-#                 master_sheet.cell(
-#                     row=7+r,
-#                     column=2+c
-#                 ).value = cell
-#         r += 1
-
-
-# workbook.save(output_path)
-
-
-# # Finish Up
-
-# end = time.time()
-# print('Completed in {0:.2f} seconds'.format(end - write_start))
-# print('Script completed in {0:.2f} seconds'.format(end - start))
-
-# notify(
-#     'Your script has just been run on {0}, taking a total of {1} seconds to'
-#     ' download and write {2} stocks and {3} dates.'.format(
-#         socket.gethostname(),
-#         round(end - start, 2),
-#         len(signs),
-#         len(dates)
-#     )
-# )
-
-# ifttt('script_logged', v1='{0} ||| {1} ||| {2} ||| {3}'.format(
-#     socket.gethostname(),
-#     len(signs),
-#     len(dates),
-#     end - start
-# ))
-
-# if 'y' in input('Would you like to open the file in Excel? (y/n) ').lower():
-#     try:
-#         os.startfile(output_path)
-#     except OSError:
-#         print('Unable to open Excel. The file is called {0}.'.format(
-#             path.split('/')[-1])
-#         )
-
-# end_script(terminate=False)
+print('Done')
